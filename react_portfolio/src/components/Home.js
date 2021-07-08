@@ -26,7 +26,7 @@ const Home = () => {
           </li>
           <li>
             <a
-              href="https://docs.google.com/document/d/1udfuKpQHWUVW4ei1VdNfrYsyeItoJrYnW5jYygvc5oA/edit?usp=sharing"
+              href="https://drive.google.com/file/d/1r_jZFhB_8bDX1FfAHpfg6mF-cN-c_VZC/view?usp=sharing"
               target="_blank"
             >
               <i className="far fa-file"></i>
