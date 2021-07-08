@@ -8,7 +8,8 @@ const Home = () => {
       <div className="hero-content">
         <div className="headline">
           <span>Hi, my name is Tanner Barcelos</span>
-          <span>Developer. Researcher. Designer. Creator</span>
+          <span>Software Engineer. Researcher. Creator.</span>
+          <small>See some important links below to learn more about me</small>
         </div>
         <ul className="socials">
           <li>
