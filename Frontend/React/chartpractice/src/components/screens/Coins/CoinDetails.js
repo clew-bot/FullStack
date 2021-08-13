@@ -1,25 +1,41 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 
-import './Coins.css';
+import axios from "axios";
 
-import { Button, Container, Table } from 'reactstrap';
+import "./Coins.css";
+
+import {
+  Button,
+  Container,
+  Table,
+  InputGroup,
+  InputGroupText,
+  InputGroupAddon,
+  Input,
+} from "reactstrap";
 
 // Component imports
-import PaginationBar from '../../../PaginationBar';
-import LoadingSpinner from '../../../LoadingSpinner';
+import PaginationBar from "../../../PaginationBar";
+import LoadingSpinner from "../../../LoadingSpinner";
 
 const CoinDetails = () => {
   const [coins, setCoins] = useState([]);
   const [paginatedValue, setPaginatedValue] = useState(1); // allow pagination
   const [isLoading, setIsLoading] = useState(false);
+  const [cryptoName, setCryptoName] = useState({});
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setCryptoName({ ...cryptoName, [name]: value.replace(" ", "-") });
+    console.log(cryptoName);
+  };
 
   useEffect(() => {
     const fetch = async () => {
       setIsLoading(true);
       const { data } = await axios.get(
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=10&page=${paginatedValue}&sparkline=false`,
+        `${process.env.REACT_APP_COINDETAILS_URL_ONE}${paginatedValue}${process.env.REACT_APP_COINDETAILS_URL_TWO}`
       );
       setCoins(data);
       setIsLoading(false);
@@ -39,6 +55,18 @@ const CoinDetails = () => {
         <Link to="/">
           <Button>Go Home</Button>
         </Link>
+        <InputGroup>
+          <InputGroupAddon addonType="append">
+            <Input
+              onChange={handleInputChange}
+              name="crypto"
+              placeholder="Enter Any Crypto"
+            />
+            <Link to={`/coin/${cryptoName.crypto}`}>
+              <Button>To The Moon</Button>
+            </Link>
+          </InputGroupAddon>
+        </InputGroup>
         <PaginationBar
           setPagination={paginate}
           nums={[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]}

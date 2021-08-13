@@ -1,29 +1,30 @@
-import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
-import { Line } from 'react-chartjs-2';
-import axios from 'axios';
-import { Button, Container } from 'reactstrap';
-
+import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { Line } from "react-chartjs-2";
+import axios from "axios";
+import { Button, Container } from "reactstrap";
+import { useHistory } from "react-router-dom";
 // Component imports
-import PaginationBar from '../../../PaginationBar';
-import LoadingSpinner from '../../../LoadingSpinner';
+import PaginationBar from "../../../PaginationBar";
+import LoadingSpinner from "../../../LoadingSpinner";
 
 // Helper methods
-import { createDatePriceCollection } from '../../../helpers/dateConversion';
+import { createDatePriceCollection } from "../../../helpers/dateConversion";
 import {
   slicePathName,
   sliceAndUpperCasePathName,
-} from '../../../helpers/slicePathName';
+} from "../../../helpers/slicePathName";
 
 // Chart Configs
-import { dataObj, optionsObj } from '../../../chartConfig/chartConfig';
+import { dataObj, optionsObj } from "../../../chartConfig/chartConfig";
 
 const CoinDetail = ({ match, location }) => {
+  const history = useHistory();
   const [isLoading, setIsLoading] = useState(false);
   const [paginatedDayValue, setPaginatedDayValue] = useState(7); // allow pagination
 
   const [coinPrice, setCoinPrice] = useState(null);
-  const [coin, setCoin] = useState('');
+  const [coin, setCoin] = useState("");
   const [coinData, setCoinData] = useState({});
 
   // Grab the coin name from the url path
@@ -31,25 +32,33 @@ const CoinDetail = ({ match, location }) => {
 
   // Get the prcies of the coin based off pagiination selection (initial query is 7 days)
   useEffect(() => {
-    const fetchCoinPrice = async () => {
-      setIsLoading(true);
+    fetchCoinPrice();
+    fetchCoinData();
+  }, []);
+
+  const fetchCoinPrice = async () => {
+    setIsLoading(true);
+    try {
       const { data } = await axios.get(
-        `https://api.coingecko.com/api/v3/simple/price?ids=${coinName}&vs_currencies=usd`,
+        `${process.env.REACT_APP_PRICE_ONE}${coinName}${process.env.REACT_APP_PRICE_TWO} `
       );
       setCoinPrice(data[coinName].usd);
-    };
-    const fetchCoinData = async () => {
-      setCoin(sliceAndUpperCasePathName(location));
+    } catch (e) {
+      history.push("/");
+    }
+  };
+  const fetchCoinData = async () => {
+    setCoin(sliceAndUpperCasePathName(location));
+    try {
       const { data } = await axios.get(
-        `https://api.coingecko.com/api/v3/coins/${coinName}/market_chart?vs_currency=usd&days=${paginatedDayValue}&interval=daily`,
+        `${process.env.REACT_APP_DATA_ONE}${coinName}${process.env.REACT_APP_DATA_TWO}${paginatedDayValue}${process.env.REACT_APP_DATA_THREE}`
       );
       setCoinData(data);
       setIsLoading(false);
-    };
-
-    fetchCoinPrice();
-    fetchCoinData();
-  }, [coinName, location, paginatedDayValue]);
+    } catch (e) {
+      history.push("/");
+    }
+  };
 
   // Only if the coinData exists should we run our conversions
   const formatCoinData = () => {
@@ -76,8 +85,8 @@ const CoinDetail = ({ match, location }) => {
           </Link>
           <p
             style={{
-              color: '#fff',
-              margin: '1rem',
+              color: "#fff",
+              margin: "1rem",
             }}
           >
             Select number of days to look back at price fluctuation
@@ -89,7 +98,7 @@ const CoinDetail = ({ match, location }) => {
         </div>
       )}
 
-      <div style={{ marginTop: '50px' }}>
+      <div style={{ marginTop: "50px" }}>
         <Line
           data={dataObj(formatCoinData)}
           options={optionsObj(coin, paginatedDayValue)}
